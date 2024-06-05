@@ -1,8 +1,5 @@
 #include "raylib.h"
 
-#define RAYLIBVIDEO_IMPL
-#include <raylibvideo.h>
-
 #define MAX_COLUMNS 5
 
 //------------------------------------------------------------------------------------
@@ -10,8 +7,6 @@
 //------------------------------------------------------------------------------------
 int main(void)
 {
-    ray_video_t video = ray_video_open("bjork-all-is-full-of-love.mpeg");
-
     // Initialization
     //--------------------------------------------------------------------------------------
     const int screenWidth = 1280;
@@ -41,7 +36,7 @@ int main(void)
         colors[i] = (Color){ GetRandomValue(20, 255), GetRandomValue(10, 55), 30, 255 };
     }
 
-    SetCameraMode(camera, CAMERA_FIRST_PERSON); // Set a first person camera mode
+    //SetCameraMode(camera, CAMERA_FIRST_PERSON); // Set a first person camera mode
 
     SetTargetFPS(60);                           // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
@@ -51,12 +46,9 @@ int main(void)
     {
         // Update
         //----------------------------------------------------------------------------------
-        UpdateCamera(&camera);
+        UpdateCamera(&camera, CAMERA_FIRST_PERSON);
         //----------------------------------------------------------------------------------
 
-        // update Video
-        ray_video_update(&video, GetFrameTime());
-            
         // Draw
         //----------------------------------------------------------------------------------
         BeginDrawing();
@@ -74,15 +66,6 @@ int main(void)
                     DrawCubeWires(positions[i], 2.0f, heights[i], 2.0f, MAROON);
                 }
 
-                // Draw Video as Billboard
-                if(video.ok)
-                {
-                    DrawCubeTexture(video.texture, (Vector3){ -16.0f, 2.5f, 0.0f }, 1.0f, 5.0f, 32.0f, BLUE);     // Draw a blue wall
-                    DrawCubeTexture(video.texture, (Vector3){ 16.0f, 2.5f, 0.0f }, 1.0f, 5.0f, 32.0f, LIME);      // Draw a green wall
-                    DrawCubeTexture(video.texture, (Vector3){ 0.0f, 2.5f, 16.0f }, 32.0f, 5.0f, 1.0f, GOLD);      // Draw a yellow wall
-                    DrawBillboard(camera, video.texture, (Vector3){0,10,-30}, 20, WHITE);
-                }
-
             EndMode3D();
 
             DrawRectangle     ( UI(10), UI(10), UI(220), UI(80), Fade(SKYBLUE, 0.8f));
@@ -92,13 +75,10 @@ int main(void)
             DrawText("- Move with keys: W, A, S, D", UI(40), UI(30), UI(10), BLACK);
             DrawText("- Mouse move to look around", UI(40), UI(50), UI(10), BLACK);
             DrawText("- Exit with Escape key", UI(40), UI(70), UI(10), BLACK);
-            if(!video.ok) DrawText("COULDN'T FIND THE VIDEO! \nYou must download the example file first. \nDouble click download_video_example.bat in the examples folder.", UI(10), UI(100), UI(10), RED);
 
         EndDrawing();
         //----------------------------------------------------------------------------------
     }
-
-    ray_video_destroy(&video);
 
     // De-Initialization
     //--------------------------------------------------------------------------------------

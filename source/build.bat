@@ -18,16 +18,18 @@ if defined install_path (
     exit /b 1
 )
 
-CL /TC /Ox /DGRAPHICS_API_OPENGL_33 /DPLATFORM_DESKTOP ^
+CL /Ox /DGRAPHICS_API_OPENGL_33 /DPLATFORM_DESKTOP ^
    /Iraylib/src ^
    /Iraylib/src/external ^
    /Iraylib/src/external/glfw/include ^
    /Iraylib/src/external/glfw/deps ^
-   /Ipl_mpeg ^
-   /I../include ^
-   example.c raylib/src/*.c ^
-   /link user32.lib shell32.lib winmm.lib gdi32.lib
+   raylib/src/*.c ^
+   example.c ^
+   /link user32.lib shell32.lib winmm.lib gdi32.lib ^
+   /OUT:game.exe
+
+   REM raylib/src/platforms/rcore_desktop.c ^
 
 DEL *.exp *.lib *.obj
 
-example.exe
+game.exe
