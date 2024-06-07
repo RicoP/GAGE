@@ -18,6 +18,8 @@ if defined install_path (
     exit /b 1
 )
 
+pushd source
+
 CL /Ox /DGRAPHICS_API_OPENGL_33 /DPLATFORM_DESKTOP ^
    /Iraylib/src ^
    /Iraylib/src/external ^
@@ -28,8 +30,8 @@ CL /Ox /DGRAPHICS_API_OPENGL_33 /DPLATFORM_DESKTOP ^
    /link user32.lib shell32.lib winmm.lib gdi32.lib ^
    /OUT:game.exe
 
-   REM raylib/src/platforms/rcore_desktop.c ^
-
 DEL *.exp *.lib *.obj
 
 game.exe
+
+popd
