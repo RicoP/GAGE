@@ -22,7 +22,7 @@ pushd source
 
 DEL game.exe
 
-CL /Ox /DGRAPHICS_API_OPENGL_33 /DPLATFORM_DESKTOP ^
+CL /Ox /DGRAPHICS_API_OPENGL_33 /DPLATFORM_DESKTOP /MP ^
    /Iraylib/src ^
    /Iraylib/src/external ^
    /Iraylib/src/external/glfw/include ^
@@ -38,6 +38,6 @@ CL /Ox /DGRAPHICS_API_OPENGL_33 /DPLATFORM_DESKTOP ^
 
 DEL *.exp *.lib *.obj
 
-game.exe
-
 popd
+
+.\source\game.exe
