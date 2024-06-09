@@ -1,18 +1,7 @@
 #include "raylib.h"
 #include "rlImGui.h"	// include the API header
 #include "imgui.h"
-
-#include <stdio.h>  /* defines FILENAME_MAX */
-//#define WINDOWS  /* uncomment this line to use it for windows.*/
-#ifdef _WIN32
-#include <direct.h>
-#define GetCurrentDir _getcwd
-#else
-#include <unistd.h>
-#define GetCurrentDir getcwd
-#endif
-
-#define MAX_COLUMNS 5
+#include "chapter1.h"
 
 //------------------------------------------------------------------------------------
 // Program main entry point
@@ -25,10 +14,6 @@ int main(void)
     const int screenHeight = 720;
     const int font_scale = 2;
     #define UI(X) (X * font_scale)
-
-
-  char buff[FILENAME_MAX];
-  GetCurrentDir( buff, FILENAME_MAX );
 
     InitWindow(screenWidth, screenHeight, "raylib [core] example - video playback");
 
@@ -47,8 +32,6 @@ int main(void)
         {
             rlImGuiBegin();			// starts the ImGui content mode. Make all ImGui calls after this
 
-            ImGui::Button("Hello World");
-
             ClearBackground(RAYWHITE);
 
             DrawRectangle     ( UI(10), UI(10), UI(220), UI(80), Fade(SKYBLUE, 0.8f));
@@ -60,6 +43,8 @@ int main(void)
             DrawText("- Exit with Escape key", UI(40), UI(70), UI(10), BLACK);
 
             DrawTexture(eileen, 0, 0, WHITE);
+
+            Chapter1();
 
             rlImGuiEnd();			// ends the ImGui content mode. Make all ImGui calls before this
         }

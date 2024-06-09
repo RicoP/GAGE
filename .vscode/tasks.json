@@ -16,6 +16,7 @@
                 "/Iimgui/",
                 "/Irlimgui/",
                 "example.cpp",
+                "chapter1.cpp",
                 "imgui/*.cpp",
                 "rlimgui/*.cpp",
                 "raylib/src/*.c",
