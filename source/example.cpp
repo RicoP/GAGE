@@ -44,7 +44,7 @@ int main(void)
 
             DrawTexture(eileen, 0, 0, WHITE);
 
-            Chapter1();
+            Chapter1(ImGui::Button("Next Step"));
 
             rlImGuiEnd();			// ends the ImGui content mode. Make all ImGui calls before this
         }
