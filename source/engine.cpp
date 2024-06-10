@@ -2,6 +2,10 @@
 #include "imgui.h"
 #include "rlimgui.h"
 #include "chapter1.h"
+#include <cstring>
+
+GageContext * s_GageContext = nullptr;
+GageContext context;
 
 //------------------------------------------------------------------------------------
 // Program main entry point
@@ -17,15 +21,12 @@ int main(void)
 
     InitWindow(screenWidth, screenHeight, "raylib [core] example - video playback");
 
-    Texture2D background = LoadTexture("../game/images/bg washington.jpg");
-    //Texture2D background = LoadTexture("../game/images/eileen happy.png");
-
-    //SetCameraMode(camera, CAMERA_FIRST_PERSON); // Set a first person camera mode
+    std::memset(&context, 0, sizeof(GageContext));
+    s_GageContext = &context;
 
     SetTargetFPS(60);                           // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
 
-    // before your game loop
     rlImGuiSetup(true); 	// sets up ImGui with ether a dark or light default theme
 
     // Main game loop
@@ -39,7 +40,7 @@ int main(void)
         {
             ClearBackground(RAYWHITE);
 
-            DrawTexture(background, 0, 0, WHITE);
+            DrawTexture(s_GageContext->background, 0, 0, WHITE);
 
             // inside your game loop, between BeginDrawing() and EndDrawing()
             rlImGuiBegin();			// starts the ImGui content mode. Make all ImGui calls after this

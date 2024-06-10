@@ -28,17 +28,15 @@ void Chapter1(bool next) {
     static bool   sm_did_choice = false;
     static double sm_wait_time = 0;
 
-    switch(sm_line) 
+    switch(sm_line)
     {
         default:
         case -1:
 
         //scene bg washington
         SCENE("bg washington");
-
-        TraceLog(LOG_INFO, "Trace 1");
         WAIT(2.0);
-        TraceLog(LOG_INFO, "Trace 2");
+        SCENE("bg whitehouse");
 
         //show eileen happy at Left
         SHOW("eileen", "happy");
