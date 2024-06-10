@@ -20,7 +20,8 @@
                 "/Irlimgui",
                 "raylib/src/*.c",
                 "imgui/*.cpp",
-                "rlimgui/*.cpp",                
+                "rlimgui/*.cpp",   
+                "chapter1.cpp",             
                 "/Fe${fileDirname}\\${fileBasenameNoExtension}.exe",
                 "${file}",
                 "/link user32.lib shell32.lib winmm.lib gdi32.lib"

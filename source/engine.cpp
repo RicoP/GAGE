@@ -1,6 +1,7 @@
 #include "raylib.h"
 #include "imgui.h"
 #include "rlimgui.h"
+#include "chapter1.h"
 
 //------------------------------------------------------------------------------------
 // Program main entry point
@@ -44,6 +45,8 @@ int main(void)
             rlImGuiBegin();			// starts the ImGui content mode. Make all ImGui calls after this
 
             ImGui::ShowDemoWindow();
+
+            Chapter1( ImGui::Button("Next Step in Script") );
       
             DrawRectangle     ( UI(10), UI(10), UI(220), UI(80), Fade(SKYBLUE, 0.8f));
             DrawRectangleLines( UI(10), UI(10), UI(220), UI(80), BLUE);
