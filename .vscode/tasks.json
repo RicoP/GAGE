@@ -9,6 +9,7 @@
                 "/EHsc",
                 "/nologo",
                 "/MD ",
+                "/DSUPPORT_FILEFORMAT_JPG",
                 "/DGRAPHICS_API_OPENGL_33 ",
                 "/DPLATFORM_DESKTOP",
                 "/Iraylib/src",
