@@ -1,6 +1,47 @@
 #include "raylib.h"
+#include "imgui.h"
+#include "rlimgui.h"
+#include <cstdio>
 
 #define MAX_COLUMNS 5
+
+bool my_tool_active = true;
+
+inline void exampleWindow() 
+{
+    // Create a window called "My First Tool", with a menu bar.
+    ImGui::Begin("My First Tool", &my_tool_active, ImGuiWindowFlags_MenuBar);
+    if (ImGui::BeginMenuBar())
+    {
+        if (ImGui::BeginMenu("File"))
+        {
+            if (ImGui::MenuItem("Open..", "Ctrl+O")) { /* Do stuff */ }
+            if (ImGui::MenuItem("Save", "Ctrl+S"))   { /* Do stuff */ }
+            if (ImGui::MenuItem("Close", "Ctrl+W"))  { my_tool_active = false; }
+            ImGui::EndMenu();
+        }
+        ImGui::EndMenuBar();
+    }
+
+    /*
+    // Edit a color stored as 4 floats
+    ImGui::ColorEdit4("Color", my_color);
+
+    // Generate samples and plot them
+    float samples[100];
+    for (int n = 0; n < 100; n++)
+        samples[n] = sinf(n * 0.2f + ImGui::GetTime() * 1.5f);
+    ImGui::PlotLines("Samples", samples, 100);
+
+    // Display contents in a scrolling region
+    ImGui::TextColored(ImVec4(1,1,0,1), "Important Stuff");
+    ImGui::BeginChild("Scrolling");
+    for (int n = 0; n < 50; n++)
+        ImGui::Text("%04d: Some text", n);
+    ImGui::EndChild();
+    */
+    ImGui::End();
+}
 
 //------------------------------------------------------------------------------------
 // Program main entry point
@@ -41,6 +82,9 @@ int main(void)
     SetTargetFPS(60);                           // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
 
+    // before your game loop
+    rlImGuiSetup(true); 	// sets up ImGui with ether a dark or light default theme
+
     // Main game loop
     while (!WindowShouldClose())                // Detect window close button or ESC key
     {
@@ -54,6 +98,16 @@ int main(void)
         BeginDrawing();
         {
             ClearBackground(RAYWHITE);
+
+            // inside your game loop, between BeginDrawing() and EndDrawing()
+            rlImGuiBegin();			// starts the ImGui content mode. Make all ImGui calls after this
+
+            exampleWindow();
+            ImGui::ShowDemoWindow();
+            if (ImGui::Button("Save"))
+            {
+                std::puts("Hello World");
+            }
 
             BeginMode3D(camera);
             {
@@ -75,10 +129,14 @@ int main(void)
             DrawText("- Move with keys: W, A, S, D", UI(40), UI(30), UI(10), BLACK);
             DrawText("- Mouse move to look around", UI(40), UI(50), UI(10), BLACK);
             DrawText("- Exit with Escape key", UI(40), UI(70), UI(10), BLACK);
+
+            rlImGuiEnd();			// ends the ImGui content mode. Make all ImGui calls before this
         }
         EndDrawing();
         //----------------------------------------------------------------------------------
     }
+
+    rlImGuiShutdown();		// cleans up ImGui
 
     // De-Initialization
     //--------------------------------------------------------------------------------------

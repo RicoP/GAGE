@@ -22,13 +22,17 @@ pushd source
 
 DEL game.exe
 
-CL /Ox /DGRAPHICS_API_OPENGL_33 /DPLATFORM_DESKTOP ^
+CL /MD /DGRAPHICS_API_OPENGL_33 /DPLATFORM_DESKTOP ^
    /Iraylib/src ^
    /Iraylib/src/external ^
    /Iraylib/src/external/glfw/include ^
    /Iraylib/src/external/glfw/deps ^
+   /Iimgui ^
+   /Irlimgui ^
    engine.cpp ^
    raylib/src/*.c ^
+   imgui/*.cpp ^
+   rlimgui/*.cpp ^
    /link user32.lib shell32.lib winmm.lib gdi32.lib ^
    /OUT:game.exe
 
