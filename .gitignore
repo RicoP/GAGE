@@ -1,6 +1,7 @@
 imgui.ini
 settings.json
 *.mpeg
+desktop.ini
 
 # Prerequisites
 *.d
