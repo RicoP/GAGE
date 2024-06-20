@@ -5,18 +5,12 @@
 #include "engine.h"
 #include <stdio.h>
 
+
+
 void scene(const char * name) {
     TraceLog(LOG_INFO, "Open Scene: %s", name);
 
-    const int BUFFER_SIZE = 1024; 
-
-    char buffer[BUFFER_SIZE];
-    int size = snprintf(buffer, BUFFER_SIZE, "../game/images/%s.jpg", name);
-
-    if(size >= BUFFER_SIZE || size < 0) {
-        TraceLog(LOG_FATAL, "scene parameter is too big.");
-        return;
-    }
+    const char * buffer = TextFormat("../game/images/%s.jpg", name);
 
     Texture2D newtexture = LoadTexture(buffer);
     if(newtexture.id != 0) {
@@ -33,6 +27,25 @@ void scene(const char * name) {
 
 void show(const char * name, const char * mood) {
     TraceLog(LOG_INFO, "Show character %s, mood: %s", name, mood);
+
+    gage_hash_t charhash = gage_hash(name);
+    bool isnew = s_GageContext->activeCharacters.find(charhash) == s_GageContext->activeCharacters.end();
+    Character & character = s_GageContext->activeCharacters[charhash];
+
+    if(isnew) {
+        character.fadeintimemax = 2;
+        character.posx = s_GageContext->resx / 2;
+        character.posy = 0;
+    }
+
+    const char * imgpath = TextFormat("../game/images/%s %s.png", name, mood);
+    Texture2D newtexture = LoadTexture(imgpath);
+    if(newtexture.id != 0) {
+        if(character.texture.id != 0) {
+            UnloadTexture(s_GageContext->background);
+        }
+        character.texture = newtexture;
+    }
 }
 
 void say(const char * name, const char * text) {

@@ -24,6 +24,9 @@ int main(void)
 
     s_GageContext = &context;
 
+    context.resx = screenWidth;
+    context.resy = screenHeight;
+
     SetTargetFPS(60);                           // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
 
@@ -38,16 +41,43 @@ int main(void)
         //----------------------------------------------------------------------------------
         BeginDrawing();
         {
+            // Background
             ClearBackground(RAYWHITE);
-
             DrawTexture(s_GageContext->background, 0, 0, WHITE);
+
+            bool waitForTransition = false;
+
+            // Characters
+            for(auto & [key, character] : s_GageContext->activeCharacters) {
+                character.fadeintime += GetFrameTime();
+                float t = 1;
+                if(character.fadeintimemax > 0) {
+                    t = character.fadeintime / character.fadeintimemax;
+                    t = gage_clamp01(t);
+                }
+
+                if(t < 1) waitForTransition = true;
+
+                Color color = WHITE;
+                int destx = character.posx - character.texture.width / 2;
+                int desty = character.posy;
+
+                int x = (int) gage_lerp(t, -character.texture.width, destx);
+                int y = desty;
+
+                color.a = (char) gage_clamp(t * 256, 0.0f, 255.0f);
+
+                DrawTexture(character.texture, x, y, color);
+            }
 
             // inside your game loop, between BeginDrawing() and EndDrawing()
             rlImGuiBegin();			// starts the ImGui content mode. Make all ImGui calls after this
 
             ImGui::ShowDemoWindow();
 
-            Chapter1( ImGui::Button("Next Step in Script") );
+            if(!waitForTransition) {
+                Chapter1( ImGui::Button("Next Step in Script") );
+            }
       
             DrawRectangle     ( UI(10), UI(10), UI(220), UI(80), Fade(SKYBLUE, 0.8f));
             DrawRectangleLines( UI(10), UI(10), UI(220), UI(80), BLUE);
