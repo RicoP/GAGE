@@ -50,6 +50,14 @@ void show(const char * name, const char * mood) {
 
 void say(const char * name, const char * text) {
     TraceLog(LOG_INFO, "character %s is saying: %s", name, text);
+
+    s_GageContext->activetextcursor = 0;
+    int len = std::snprintf(s_GageContext->activetext, GageContext::TEXTMAX, "%s: %s", name, text);
+
+    if(len >= GageContext::TEXTMAX || len < 0) {
+        TraceLog(LOG_FATAL, "Text is too long.");
+        return;
+    }
 }
 
 bool choice(const char * text) {

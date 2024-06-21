@@ -70,6 +70,30 @@ int main(void)
                 DrawTexture(character.texture, x, y, color);
             }
 
+            // Show text
+            if(*s_GageContext->activetext) {
+                char textbuffer[GageContext::TEXTMAX];
+                strcpy(textbuffer, s_GageContext->activetext);
+                bool textscrolling = textbuffer[s_GageContext->activetextcursor] != 0;
+                if(textscrolling) {
+                    //static float timesincelasttext
+                    waitForTransition = true;
+                    s_GageContext->activetextcursor++;
+                    textbuffer[s_GageContext->activetextcursor] = 0;
+                }
+
+                // Draw box for text
+                {
+                    int top = screenHeight - 400;
+                    int bottom = 40;
+                    int left = 40;
+                    int right = screenWidth - 40;
+                    DrawRectangle      ( 40, screenHeight - 200, screenWidth - 80, 160, Fade(SKYBLUE, 0.8f));
+                    DrawRectangleLines ( 40, screenHeight - 200, screenWidth - 80, 160, BLUE);
+                    DrawText(textbuffer, 40 + 16, screenHeight - 200 + 16, UI(10), BLACK);
+                }
+            }
+
             // inside your game loop, between BeginDrawing() and EndDrawing()
             rlImGuiBegin();			// starts the ImGui content mode. Make all ImGui calls after this
 
@@ -78,14 +102,6 @@ int main(void)
             if(!waitForTransition) {
                 Chapter1( ImGui::Button("Next Step in Script") );
             }
-      
-            DrawRectangle     ( UI(10), UI(10), UI(220), UI(80), Fade(SKYBLUE, 0.8f));
-            DrawRectangleLines( UI(10), UI(10), UI(220), UI(80), BLUE);
-
-            DrawText(TextFormat("RAYLIB VIDEO EXAMPLE (%.1f FPS)", 1.0f / GetFrameTime()), UI(20), UI(20), UI(10), BLACK);
-            DrawText("- Move with keys: W, A, S, D", UI(40), UI(30), UI(10), BLACK);
-            DrawText("- Mouse move to look around", UI(40), UI(50), UI(10), BLACK);
-            DrawText("- Exit with Escape key", UI(40), UI(70), UI(10), BLACK);
 
             rlImGuiEnd();			// ends the ImGui content mode. Make all ImGui calls before this
         }

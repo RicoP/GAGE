@@ -26,10 +26,15 @@ struct Character {
 };
 
 struct GageContext {
+    enum {
+        TEXTMAX = 1024
+    };
     int resx = 0;
     int resy = 0;
     Texture2D background = {0};
     std::map<gage_hash_t, Character> activeCharacters;
+    char activetext[TEXTMAX] = "";
+    int activetextcursor = 0;
 };
 
 extern GageContext * s_GageContext;
