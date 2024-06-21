@@ -69,6 +69,11 @@ void Chapter1(bool next) {
         //say eileen "Anyway let's do our best for today, okay?"
         SAY("eileen", "Anyway let's do our best for today, okay?");
 
+        //show eileen happy
+        SHOW("lucy", "happy");
+        //say eileen "Anyway let's do our best for today, okay?"
+        SAY("lucy", "Hi there.");
+
         RETURN();
     }
 }
