@@ -42,7 +42,7 @@ void show(const char * name, const char * mood) {
     Texture2D newtexture = LoadTexture(imgpath);
     if(newtexture.id != 0) {
         if(character.texture.id != 0) {
-            UnloadTexture(s_GageContext->background);
+            UnloadTexture(character.texture);
         }
         character.texture = newtexture;
     }
