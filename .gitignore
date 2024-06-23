@@ -3,6 +3,12 @@ settings.json
 *.mpeg
 desktop.ini
 
+# emscripten
+*.html
+*.js
+*.data
+*.wasm
+
 # Prerequisites
 *.d
 
