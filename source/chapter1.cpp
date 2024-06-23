@@ -23,7 +23,7 @@ label chapter1:
     return
 */
 
-void Chapter1(bool next) {
+void Chapter1() {
     static int    sm_line = -1;
     static bool   sm_did_choice = false;
     static double sm_wait_time = 0;

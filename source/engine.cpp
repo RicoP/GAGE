@@ -32,6 +32,8 @@ int main(void)
 
     rlImGuiSetup(true); 	// sets up ImGui with ether a dark or light default theme
 
+    bool forcetick = true;
+
     // Main game loop
     while (!WindowShouldClose())                // Detect window close button or ESC key
     {
@@ -49,11 +51,18 @@ int main(void)
 
             // Characters
             for(auto & [key, character] : s_GageContext->activeCharacters) {
-                character.fadeintime += GetFrameTime();
                 float t = 1;
                 if(character.fadeintimemax > 0) {
+                    float t0 = character.fadeintime / character.fadeintimemax;
+                    t0 = gage_clamp01(t0);
+                
+                    character.fadeintime += GetFrameTime();
+                    
                     t = character.fadeintime / character.fadeintimemax;
                     t = gage_clamp01(t);
+                    if(t0 < 1 && t == 1) {
+                        forcetick = true;
+                    }
                 }
 
                 if(t < 1) waitForTransition = true;
@@ -94,13 +103,21 @@ int main(void)
                 }
             }
 
+            if(s_GageContext->waittime > 0) {
+                waitForTransition = true;
+                s_GageContext->waittime -= GetFrameTime();
+            }
+
             // inside your game loop, between BeginDrawing() and EndDrawing()
             rlImGuiBegin();			// starts the ImGui content mode. Make all ImGui calls after this
 
             ImGui::ShowDemoWindow();
 
             if(!waitForTransition) {
-                Chapter1( ImGui::Button("Next Step in Script") );
+                if(forcetick || s_GageContext->choice_active || ImGui::Button("Next Step in Script")) {
+                    Chapter1();
+                    forcetick = false;
+                }
             }
 
             rlImGuiEnd();			// ends the ImGui content mode. Make all ImGui calls before this

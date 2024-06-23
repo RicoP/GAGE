@@ -60,6 +60,20 @@ void say(const char * name, const char * text) {
     }
 }
 
+void choice_begin() {
+    s_GageContext->choice_active = true;
+}
+
 bool choice(const char * text) {
-    return ImGui::Button(text);
+    bool didchoice = ImGui::Button(text);
+    if(didchoice) s_GageContext->choice_active = false;
+    return didchoice;
+}
+
+void choice_end() {
+    s_GageContext->choice_active = false;
+}
+
+void wait(double seconds) {
+    s_GageContext->waittime = seconds;
 }

@@ -35,6 +35,8 @@ struct GageContext {
     std::map<gage_hash_t, Character> activeCharacters;
     char activetext[TEXTMAX] = "";
     int activetextcursor = 0;
+    double waittime = 0;
+    bool choice_active = false;
 };
 
 extern GageContext * s_GageContext;
