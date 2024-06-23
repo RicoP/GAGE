@@ -37,6 +37,7 @@ struct GageContext {
     int activetextcursor = 0;
     double waittime = 0;
     bool choice_active = false;
+    bool forcetick = true;
 };
 
 extern GageContext * s_GageContext;

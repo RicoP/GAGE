@@ -5,21 +5,22 @@
 #include "engine.h"
 #include <cstring>
 
+#if defined(PLATFORM_WEB)
+    #include <emscripten/emscripten.h>
+#endif
+
 GageContext * s_GageContext = nullptr;
 GageContext context;
 
-//------------------------------------------------------------------------------------
-// Program main entry point
-//------------------------------------------------------------------------------------
+const int screenWidth = 1280;
+const int screenHeight = 720;
+const int font_scale = 2;
+#define UI(X) (X * font_scale)
+
+void Update();
+
 int main(void)
 {
-    // Initialization
-    //--------------------------------------------------------------------------------------
-    const int screenWidth = 1280;
-    const int screenHeight = 720;
-    const int font_scale = 2;
-    #define UI(X) (X * font_scale)
-
     InitWindow(screenWidth, screenHeight, "raylib [core] example - video playback");
 
     s_GageContext = &context;
@@ -32,16 +33,28 @@ int main(void)
 
     rlImGuiSetup(true); 	// sets up ImGui with ether a dark or light default theme
 
-    bool forcetick = true;
-
+#if defined(PLATFORM_WEB)
+    emscripten_set_main_loop(Update, 60, 1);
+#else
     // Main game loop
-    while (!WindowShouldClose())                // Detect window close button or ESC key
+    while (!WindowShouldClose())    // Detect window close button or ESC key
     {
-        // Update
+        Update();
+    }
 
-        // Draw
-        //----------------------------------------------------------------------------------
-        BeginDrawing();
+    rlImGuiShutdown();		// cleans up ImGui
+
+    // De-Initialization
+    //--------------------------------------------------------------------------------------
+    CloseWindow();        // Close window and OpenGL context
+    //--------------------------------------------------------------------------------------
+#endif
+
+    return 0;
+}
+
+void Update() {
+ BeginDrawing();
         {
             // Background
             ClearBackground(RAYWHITE);
@@ -61,7 +74,7 @@ int main(void)
                     t = character.fadeintime / character.fadeintimemax;
                     t = gage_clamp01(t);
                     if(t0 < 1 && t == 1) {
-                        forcetick = true;
+                        s_GageContext->forcetick = true;
                     }
                 }
 
@@ -114,24 +127,13 @@ int main(void)
             ImGui::ShowDemoWindow();
 
             if(!waitForTransition) {
-                if(forcetick || s_GageContext->choice_active || ImGui::Button("Next Step in Script")) {
+                if(s_GageContext->forcetick || s_GageContext->choice_active || ImGui::Button("Next Step in Script")) {
                     Chapter1();
-                    forcetick = false;
+                    s_GageContext->forcetick = false;
                 }
             }
 
             rlImGuiEnd();			// ends the ImGui content mode. Make all ImGui calls before this
         }
         EndDrawing();
-        //----------------------------------------------------------------------------------
-    }
-
-    rlImGuiShutdown();		// cleans up ImGui
-
-    // De-Initialization
-    //--------------------------------------------------------------------------------------
-    CloseWindow();        // Close window and OpenGL context
-    //--------------------------------------------------------------------------------------
-
-    return 0;
 }

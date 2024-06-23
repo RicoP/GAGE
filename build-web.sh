@@ -37,5 +37,22 @@ compile_empp imgui/imgui_tables.cpp
 compile_empp imgui/imgui_widgets.cpp 
 compile_empp rlimgui/rlimgui.cpp 
 
-emcc raudio.o rcore.o rmodels.o rshapes.o rtext.o rtextures.o utils.o chapter1.o engine.o gage.o imgui.o imgui_demo.o imgui_draw.o imgui_tables.o imgui_widgets.o rlimgui.o -o game.html  -sUSE_GLFW=3
+emcc raudio.o \
+ rcore.o \
+ rmodels.o \
+ rshapes.o \
+ rtext.o \
+ rtextures.o \
+ utils.o \
+ chapter1.o \
+ engine.o \
+ gage.o \
+ imgui.o \
+ imgui_demo.o \
+ imgui_draw.o \
+ imgui_tables.o \
+ imgui_widgets.o \
+ rlimgui.o \
+ -o game.html -sUSE_GLFW=3 --preload-file ..
+ 
 popd

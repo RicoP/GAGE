@@ -5,12 +5,17 @@
 #include "engine.h"
 #include <stdio.h>
 
+#ifdef PLATFORM_WEB
+    #define WRKDIR_PREFIX "./"
+#else
+    #define WRKDIR_PREFIX "../"
+#endif
 
 
 void scene(const char * name) {
     TraceLog(LOG_INFO, "Open Scene: %s", name);
 
-    const char * buffer = TextFormat("../game/images/%s.jpg", name);
+    const char * buffer = TextFormat(WRKDIR_PREFIX "game/images/%s.jpg", name);
 
     Texture2D newtexture = LoadTexture(buffer);
     if(newtexture.id != 0) {
@@ -38,7 +43,7 @@ void show(const char * name, const char * mood) {
         character.posy = 0;
     }
 
-    const char * imgpath = TextFormat("../game/images/%s %s.png", name, mood);
+    const char * imgpath = TextFormat(WRKDIR_PREFIX "game/images/%s %s.png", name, mood);
     Texture2D newtexture = LoadTexture(imgpath);
     if(newtexture.id != 0) {
         if(character.texture.id != 0) {
