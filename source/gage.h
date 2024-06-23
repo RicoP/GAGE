@@ -28,7 +28,7 @@ void wait(double seconds);
 #define CHOICE_END(...) do { if(!sm_did_choice) return; choice_end(); } while(0)
 #define CHOICE(TEXT)    sm_did_choice = choice(TEXT) || sm_did_choice
 #define SCENE(...)      do { scene(__VA_ARGS__); YIELD(); } while(0)
-#define SHOW(...)       do { show(__VA_ARGS__); } while(0)
-#define SAY(...)        do { say(__VA_ARGS__);   YIELD(); } while(0)
+#define SHOW(...)       do { show(__VA_ARGS__); YIELD(); } while(0)
+#define SAY(...)        do { say(__VA_ARGS__); YIELD(); } while(0)
 #define WAIT(...)       do { wait(__VA_ARGS__); YIELD(); } while(0)
 #define RETURN(...)     do { for(;;) { YIELD(); } } while(0)
