@@ -20,24 +20,26 @@ if defined install_path (
 
 pushd source
 
-DEL game.exe
+DEL *.exe
 
-CL /MD /DGRAPHICS_API_OPENGL_33 /DPLATFORM_DESKTOP ^
+CL /MD /DGRAPHICS_API_OPENGL_33 /DPLATFORM_DESKTOP /DSUPPORT_FILEFORMAT_JPG /std:c++17 ^
    /Iraylib/src ^
    /Iraylib/src/external ^
    /Iraylib/src/external/glfw/include ^
    /Iraylib/src/external/glfw/deps ^
    /Iimgui ^
    /Irlimgui ^
+   chapter1.cpp ^
    engine.cpp ^
+   gage.cpp ^
    raylib/src/*.c ^
    imgui/*.cpp ^
    rlimgui/*.cpp ^
    /link user32.lib shell32.lib winmm.lib gdi32.lib ^
    /OUT:game.exe
 
-DEL *.exp *.lib *.obj
+DEL *.exp *.lib *.obj *.ilk
 
-game.exe
+.\game.exe
 
 popd
