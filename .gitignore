@@ -2,6 +2,12 @@ imgui.ini
 settings.json
 *.mpeg
 
+# Emscripten
+*.html
+*.js
+*.wasm
+*.data
+
 # Prerequisites
 *.d
 

@@ -60,6 +60,6 @@ emcc raudio.o \
     imgui_tables.o \
     imgui_widgets.o \
     rlimgui.o \
-    -o game.html -sUSE_GLFW=3 
+    -o game.html -sUSE_GLFW=3 --preload-file ..
 
 popd

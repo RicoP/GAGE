@@ -3,10 +3,16 @@
 #include "imgui.h"
 #include <stdio.h>
 
+#ifdef PLATFORM_WEB
+#define FILE_PREFIX "./game/"
+#else
+#define FILE_PREFIX "../game/"
+#endif
+
 void scene(const char * name) {
     TraceLog(LOG_INFO, "Open Scene: %s", name);
 
-    const char * path = TextFormat("../game/images/%s.jpg", name);
+    const char * path = TextFormat(FILE_PREFIX "images/%s.jpg", name);
 
     Texture2D newtexture = LoadTexture(path);
     if(newtexture.id != 0) {
@@ -29,7 +35,7 @@ void show(const char * name, const char * mood) {
     bool isnew = s_GageContext->characters.find(namehash) == s_GageContext->characters.end();
     GageCharacter & character = s_GageContext->characters[namehash];
 
-    const char * path = TextFormat("../game/images/%s %s.png", name, mood);
+    const char * path = TextFormat(FILE_PREFIX "images/%s %s.png", name, mood);
 
     Texture2D newtexture = LoadTexture(path);
     if(newtexture.id != 0) {
@@ -72,11 +78,11 @@ void choice_end() {
 }
 
 void music(const char * title) {
-    return;
+    //return;
 
     TraceLog(LOG_INFO, "Play music track %s", title);
 
-    const char * path = TextFormat("../game/music/%s.mp3", title);
+    const char * path = TextFormat(FILE_PREFIX "music/%s.mp3", title);
 
     if(s_GageContext->isMusicPlaying) {
         StopMusicStream(s_GageContext->music);
