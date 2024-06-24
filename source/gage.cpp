@@ -59,14 +59,21 @@ void say(const char * name, const char * text) {
         return;
     }
 }
+void choice_begin() {
+    s_GageContext->choiceactive = true;
+}
 
 bool choice(const char * text) {
     return ImGui::Button(text);
 }
 
+void choice_end() {
+    s_GageContext->choiceactive = false;
+}
+
 void music(const char * title) {
     return;
-    
+
     TraceLog(LOG_INFO, "Play music track %s", title);
 
     const char * path = TextFormat("../game/music/%s.mp3", title);
@@ -79,4 +86,8 @@ void music(const char * title) {
     s_GageContext->music = LoadMusicStream(path);
     PlayMusicStream(s_GageContext->music);
     s_GageContext->isMusicPlaying = true;
+}
+
+void wait(double seconds) {
+    s_GageContext->waittime = seconds;
 }

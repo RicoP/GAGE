@@ -34,6 +34,10 @@ struct GageContext {
 
     char text[TEXT_MAX] = "";
     int  textcursor = 0;
+
+    double waittime = 0;
+    bool forcetick = true;
+    bool choiceactive = false;
 };
 
 extern GageContext * s_GageContext;

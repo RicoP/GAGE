@@ -76,8 +76,24 @@ int main(void)
                 }
             }
 
+            // check waittime
+            if(s_GageContext->waittime > 0) {
+                s_GageContext->waittime -= GetFrameTime();
+                if(s_GageContext->waittime <= 0) {
+                    s_GageContext->forcetick = true;
+                }
+                else {
+                    waitfortransition = true;
+                }
+            }
+
             if(!waitfortransition) {
-                Chapter1( ImGui::Button("Next Step in Script") );
+                if(s_GageContext->choiceactive) s_GageContext->forcetick = true;
+
+                if(s_GageContext->forcetick || ImGui::Button("Next Step in Script")) {
+                    Chapter1();
+                    s_GageContext->forcetick = false;
+                }
             }
 
             rlImGuiEnd();			// ends the ImGui content mode. Make all ImGui calls before this

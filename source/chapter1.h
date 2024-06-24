@@ -2,4 +2,4 @@
 
 #include "gage.h"
 
-void Chapter1(bool next);
+void Chapter1();
