@@ -24,8 +24,15 @@ struct GageCharacter {
 };
 
 struct GageContext {
+    enum {
+        TEXT_MAX = 1024
+    };
+
     Texture2D background = {0};
     std::map<gage_hash_t, GageCharacter> characters;
+
+    char text[TEXT_MAX] = "";
+    int  textcursor = 0;
 };
 
 extern GageContext * s_GageContext;
@@ -78,6 +85,13 @@ inline void show(const char * name, const char * mood) {
 
 inline void say(const char * name, const char * text) {
     TraceLog(LOG_INFO, "character %s is saying: %s", name, text);
+
+    s_GageContext->textcursor = 0;
+    int len = std::snprintf(s_GageContext->text, GageContext::TEXT_MAX, "%s: %s", name, text);
+    if(len >= GageContext::TEXT_MAX || len < 0) {
+        TraceLog(LOG_FATAL, "Text is too long.");
+        return;
+    }
 }
 
 inline bool choice(const char * text) {
