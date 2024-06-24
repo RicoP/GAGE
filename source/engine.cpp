@@ -2,6 +2,7 @@
 #include "imgui.h"
 #include "rlimgui.h"
 #include "chapter1.h"
+#include "engine.h"
 #include <cstring>
 
 GageContext * s_GageContext = nullptr;
@@ -33,6 +34,8 @@ int main(void)
     // Main game loop
     while (!WindowShouldClose())                // Detect window close button or ESC key
     {
+        bool waitfortransition = false;
+
         // Update
         if(s_GageContext->isMusicPlaying) {
             UpdateMusicStream(s_GageContext->music);
@@ -55,8 +58,6 @@ int main(void)
 
             ImGui::ShowDemoWindow();
 
-            Chapter1( ImGui::Button("Next Step in Script") );
-      
             // Draw Textbox
             {
                 if(s_GageContext->text[0]) {
@@ -64,6 +65,7 @@ int main(void)
                     std::strcpy(buffer, s_GageContext->text);
                     bool textscrolling = buffer[s_GageContext->textcursor] != 0;
                     if(textscrolling) {
+                        waitfortransition = true;
                         s_GageContext->textcursor++;
                         buffer[s_GageContext->textcursor] = 0;
                     }
@@ -72,6 +74,10 @@ int main(void)
                     DrawRectangleLines ( 40, GetScreenHeight() - 200, GetScreenWidth() - 80, 160, BLUE);
                     DrawText(buffer, 40 + 16, GetScreenHeight() - 200 + 16, UI(10), BLACK);
                 }
+            }
+
+            if(!waitfortransition) {
+                Chapter1( ImGui::Button("Next Step in Script") );
             }
 
             rlImGuiEnd();			// ends the ImGui content mode. Make all ImGui calls before this

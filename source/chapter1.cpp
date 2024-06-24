@@ -44,6 +44,15 @@ void Chapter1(bool next) {
         SHOW("eileen", "happy");
         //say eileen "Hello, nice meeting you!"
         SAY("eileen", "Hello, nice meeting you!");
+        SAY("eileen", "Hello, nice meeting you!");
+        SAY("eileen", "Hello, nice meeting you!");
+        SAY("eileen", "Hello, nice meeting you!");
+        SAY("eileen", "Hello, nice meeting you!");
+        SAY("eileen", "Hello, nice meeting you!");
+        SAY("eileen", "Hello, nice meeting you!");
+        SAY("eileen", "Hello, nice meeting you!");
+        SAY("eileen", "Hello, nice meeting you!");
+        SAY("eileen", "Hello, nice meeting you!");
         //say eileen "How are you?"
         SAY("eileen", "How are you");
 
