@@ -21,6 +21,8 @@ int main(void)
 
     InitWindow(screenWidth, screenHeight, "GAGE");
 
+    InitAudioDevice();              // Initialize audio device
+
     s_GageContext = &context;
 
     SetTargetFPS(60);                           // Set our game to run at 60 frames-per-second
@@ -32,6 +34,9 @@ int main(void)
     while (!WindowShouldClose())                // Detect window close button or ESC key
     {
         // Update
+        if(s_GageContext->isMusicPlaying) {
+            UpdateMusicStream(s_GageContext->music);
+        }
 
         // Draw
         //----------------------------------------------------------------------------------

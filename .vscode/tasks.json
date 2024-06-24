@@ -11,6 +11,7 @@
                 "/MD",
                 "/std:c++17",
                 "/DSUPPORT_FILEFORMAT_JPG",
+                "/DSUPPORT_FILEFORMAT_MP3",
                 "/DGRAPHICS_API_OPENGL_33 ",
                 "/DPLATFORM_DESKTOP",
                 "/Iraylib/src",

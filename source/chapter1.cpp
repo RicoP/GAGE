@@ -38,6 +38,8 @@ void Chapter1(bool next) {
         WAIT(2.0);
         SCENE("bg whitehouse");
 
+        MUSIC("country");
+
         //show eileen happy at Left
         SHOW("eileen", "happy");
         //say eileen "Hello, nice meeting you!"

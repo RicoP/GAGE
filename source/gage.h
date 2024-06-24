@@ -28,6 +28,9 @@ struct GageContext {
         TEXT_MAX = 1024
     };
 
+    Music music = {0};
+    bool isMusicPlaying = false;
+
     Texture2D background = {0};
     std::map<gage_hash_t, GageCharacter> characters;
 
@@ -98,6 +101,21 @@ inline bool choice(const char * text) {
     return ImGui::Button(text);
 }
 
+inline void music(const char * title) {
+    TraceLog(LOG_INFO, "Play music track %s", title);
+
+    const char * path = TextFormat("../game/music/%s.mp3", title);
+
+    if(s_GageContext->isMusicPlaying) {
+        StopMusicStream(s_GageContext->music);
+        UnloadMusicStream(s_GageContext->music);
+    }
+    
+    s_GageContext->music = LoadMusicStream(path);
+    PlayMusicStream(s_GageContext->music);
+    s_GageContext->isMusicPlaying = true;
+}
+
 // Handmade coroutines
 // https://de.wikipedia.org/wiki/Duff%E2%80%99s_Device
 // https://en.wikipedia.org/wiki/Duff%27s_device
@@ -117,6 +135,7 @@ inline bool choice(const char * text) {
 #define CHOICE(TEXT) sm_did_choice = choice(TEXT) || sm_did_choice
 
 #define SCENE       scene
+#define MUSIC       music
 #define SHOW        YIELD(); show
 #define SAY         YIELD(); say
 #define RETURN(...) for(;;) { YIELD(); }
