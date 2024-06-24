@@ -13,17 +13,9 @@ extern GageContext * s_GageContext;
 inline void scene(const char * name) {
     TraceLog(LOG_INFO, "Open Scene: %s", name);
 
-    const int BUFFER_SIZE = 1024; 
+    const char * path = TextFormat("../game/images/%s.jpg", name);
 
-    char buffer[BUFFER_SIZE];
-    int size = snprintf(buffer, BUFFER_SIZE, "../game/images/%s.jpg", name);
-
-    if(size >= BUFFER_SIZE || size < 0) {
-        TraceLog(LOG_FATAL, "scene parameter is too big.");
-        return;
-    }
-
-    Texture2D newtexture = LoadTexture(buffer);
+    Texture2D newtexture = LoadTexture(path);
     if(newtexture.id != 0) {
         if(s_GageContext->background.id != 0) {
             UnloadTexture(s_GageContext->background);
@@ -32,7 +24,7 @@ inline void scene(const char * name) {
         s_GageContext->background = newtexture;
     }
     else {
-        TraceLog(LOG_FATAL, "scene couldn't load texture '%s'.", buffer);
+        TraceLog(LOG_FATAL, "scene couldn't load texture '%s'.", path);
     }
 }
 
