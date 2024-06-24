@@ -3,9 +3,29 @@
 #include "imgui.h"
 #include "raylib.h"
 #include <stdio.h>
+#include <map>
+
+typedef unsigned long long gage_hash_t;
+
+constexpr gage_hash_t gage_hash(const char* pBuffer) {
+    gage_hash_t  MagicPrime = 0x00000100000001b3;
+    gage_hash_t  Hash       = 0xcbf29ce484222325;
+
+    for ( ; *pBuffer; pBuffer++)
+        Hash = (Hash ^ *pBuffer) * MagicPrime;   // bitweises XOR und dann Multiplikation
+
+    return Hash;
+}
+
+struct GageCharacter {
+    Texture2D texture = {0};
+    int x = 0;
+    int y = 0;
+};
 
 struct GageContext {
-    Texture2D background;
+    Texture2D background = {0};
+    std::map<gage_hash_t, GageCharacter> characters;
 };
 
 extern GageContext * s_GageContext;
@@ -30,6 +50,30 @@ inline void scene(const char * name) {
 
 inline void show(const char * name, const char * mood) {
     TraceLog(LOG_INFO, "Show character %s, mood: %s", name, mood);
+
+    gage_hash_t namehash = gage_hash(name);
+
+    bool isnew = s_GageContext->characters.find(namehash) == s_GageContext->characters.end();
+    GageCharacter & character = s_GageContext->characters[namehash];
+
+    const char * path = TextFormat("../game/images/%s %s.png", name, mood);
+
+    Texture2D newtexture = LoadTexture(path);
+    if(newtexture.id != 0) {
+        if(character.texture.id != 0) {
+            UnloadTexture(character.texture);
+        }
+    
+        character.texture = newtexture;
+    }
+    else {
+        TraceLog(LOG_FATAL, "show couldn't load texture '%s'.", path);
+    }
+
+    if(isnew) {
+        character.x = GetScreenWidth() / 2 - character.texture.width / 2;
+        character.y = 0;
+    }
 }
 
 inline void say(const char * name, const char * text) {

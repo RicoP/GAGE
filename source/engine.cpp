@@ -21,7 +21,6 @@ int main(void)
 
     InitWindow(screenWidth, screenHeight, "raylib [core] example - video playback");
 
-    std::memset(&context, 0, sizeof(GageContext));
     s_GageContext = &context;
 
     SetTargetFPS(60);                           // Set our game to run at 60 frames-per-second
@@ -41,6 +40,10 @@ int main(void)
             ClearBackground(RAYWHITE);
 
             DrawTexture(s_GageContext->background, 0, 0, WHITE);
+
+            for(auto & [key, character] : s_GageContext->characters) {
+                DrawTexture(character.texture, character.x, character.y, WHITE);
+            }
 
             // inside your game loop, between BeginDrawing() and EndDrawing()
             rlImGuiBegin();			// starts the ImGui content mode. Make all ImGui calls after this
