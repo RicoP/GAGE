@@ -147,6 +147,8 @@ void parse_source() {
     }
 }
 
+// HA 0: implementieren
+//       Funktion sollte auf stddio den folgenden code generieren.
 void transpile_commands() {
     // ... implement me
     #if 0
@@ -184,6 +186,27 @@ int main(int argn, char ** argv) {
 		"say lisa \"Hello \\\"World\"\n"
 		"scene bg desert\n";
 	pi = 0;
+
+    // HA 1: folgende source
+    const char * source1 = 
+		/*kein return am schluss */ "show lisa happy";
+
+    // HA 2: folgende source
+    const char * source2 = 
+		/* Leerzeilen */
+        "show lisa happy\n"
+		"\n"
+		"scene bg desert\n";
+
+    // HA 3: mehr whitespace zeichen statements
+    const char * source3 = 
+        "show    lisa    happy   \n";
+
+    // HA 4: mehr oder weniger parameter
+    const char * source4 = 
+        "music \"joy\"\n"
+        "wait 2.0\n"
+        "return\n";
 
     puts(source);
 
