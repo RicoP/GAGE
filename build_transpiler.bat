@@ -22,7 +22,7 @@ pushd transpiler
 
 DEL transpiler.exe
 
-CL /MD transpiler.cpp /link /OUT:transpiler.exe
+CL /MD /EHsc transpiler.cpp /link /OUT:transpiler.exe
 
 DEL *.exp *.lib *.obj
 
