@@ -1,4 +1,5 @@
 #include <vector>
+#include <assert.h>
 
 struct string_part {
 	int begin = 0;
@@ -7,12 +8,56 @@ struct string_part {
 
 static const string_part string_part_empty = { 0, 0 };
 
+struct Block {
+    std::vector<struct Statement> statements;
+};
+
 struct Command {
 	string_part name;
 	std::vector<string_part> params;
 };
 
-std::vector<Command> commands;
+struct Branch {
+    string_part head;
+    Block block;
+};
+
+struct Condition {
+    std::vector<struct Branch> branches;
+};
+
+struct Statement {
+enum class Type {
+    none = 0,
+    command,
+    condition
+};
+
+private:
+    Command activecommand;
+    Condition activecondition;
+    Type activetype = Type::none;
+
+public:
+    Statement(Command && _command) : activecommand(_command), activetype(Type::command) {}
+    Statement(Condition && _condition) : activecondition(_condition), activetype(Type::condition) {}
+
+    Type type() const { return activetype; }
+
+    const Command & command() const {
+        assert(type() == Type::command);
+        return activecommand;
+    }
+
+    const Condition & condition() const {
+        assert(type() == Type::condition);
+        return activecondition;
+    }
+};
+
+struct Program {
+    Block block;
+};
 
 // read the entire text file including one 
 // zero character and return the memory address.
@@ -166,7 +211,7 @@ string_part read_parameter() {
     return string_part { begin, length };
 }
 
-void parse_source() {
+void parse_source(std::vector<struct Statement> & statements) {
     for(;;) {
         switch(current_state) {
             case States::ReadLine: {
@@ -193,8 +238,8 @@ void parse_source() {
                 }
                 next_line();
 
-                Command command = { command_name, std::move(params) };
-                commands.push_back(command);
+                Statement statement(Command { command_name, std::move(params) });
+                statements.push_back(std::move(statement));
 
                 current_state = States::ReadLine;
             } break;
@@ -213,9 +258,29 @@ void dump(const char * str) {
     fputs(str, stdout);
 }
 
-// HA 0: implementieren
-//       Funktion sollte auf stddio den folgenden code generieren.
-void transpile_commands(const std::vector<Command> & commands) {
+
+void transpile_block(const Block & block) {
+    for(const Statement & statement : block.statements) {
+        if(statement.type() == Statement::Type::command) {
+            const Command & command = statement.command();
+            char * command_name = to_string(source, command.name);
+            to_upper(command_name);
+            dump("        ");
+            dump(command_name);
+            dump("(");
+            for(int i = 0; i != command.params.size(); ++i) {
+                if(i != 0) dump(", ");
+                dump(to_string(source, command.params[i]));
+            }
+            dump(");\n");
+        }
+        else if(statement.type() == Statement::Type::condition) {
+            dump("TODO!!!\n");
+        }
+    }
+}
+
+void transpile_program(const Program & program) {
     dump("#include \"gage.h\"                             \n");
     dump("#include \"chapter1.h\"                         \n");
     dump("void Chapter1() {                               \n");
@@ -227,19 +292,8 @@ void transpile_commands(const std::vector<Command> & commands) {
     dump("        default:                                \n");
     dump("        case -1:                                \n");
 
-    for(const Command & command : commands) {
-        char * command_name = to_string(source, command.name);
-        to_upper(command_name);
-        dump("        ");
-        dump(command_name);
-        dump("(");
-        for(int i = 0; i != command.params.size(); ++i) {
-            if(i != 0) dump(", ");
-            dump(to_string(source, command.params[i]));
-        }
-        dump(");\n");
-    }
-
+    transpile_block(program.block);
+    
     dump("        RETURN();                               \n");
     dump("    }                                           \n");
     dump("}                                               \n");
@@ -279,22 +333,43 @@ int main(int argn, char ** argv) {
         "wait 2.0\n"
         "return\n";
 
+    // Extra: if statements
+    const char * source5 = 
+        "music \"joy\"\n"
+        "wait 2.0\n"
+        "show lisa happy\n"
+		"say lisa \"How are you\"\n"
+        "\"good\":\n"
+		"    say lisa \"Great!\"\n"
+        "\"bad\":\n"
+		"    say lisa \"Shame.\"\n"
+		"say lisa \"Anyway\"\n"
+        "return\n";
+
     puts(source);
 
-    parse_source();
+    Program program;
 
-    for(Command command : commands) {
-        string_part command_name = command.name;
-        std::printf("Command begin %d, length %d, string %s \n", command_name.begin, command_name.length, to_string(source, command_name));
-        for(int i = 0; i !=  command.params.size(); ++i) {
-            string_part param = command.params[i];
-            std::printf("Param%d begin %d, length %d, string %s \n", i, param.begin, param.length, to_string(source, param));
+    parse_source(program.block.statements);
+
+    for(Statement & statement : program.block.statements) {
+        if(statement.type() == Statement::Type::command) {
+            const Command & command = statement.command();
+            string_part command_name = command.name;
+            std::printf("Command begin %d, length %d, string %s \n", command_name.begin, command_name.length, to_string(source, command_name));
+            for(int i = 0; i !=  command.params.size(); ++i) {
+                string_part param = command.params[i];
+                std::printf("Param%d begin %d, length %d, string %s \n", i, param.begin, param.length, to_string(source, param));
+            }
+        }
+        else if(statement.type() == Statement::Type::condition) {
+            puts("TODO!");
         }
     }
     /*
     */
 
-    transpile_commands(commands);
+    transpile_program(program);
 
     return 0;
 }
