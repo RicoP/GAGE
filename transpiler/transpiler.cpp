@@ -5,10 +5,11 @@ struct string_part {
 	int length = 0;
 };
 
+static const string_part string_part_empty = { 0, 0 };
+
 struct Command {
 	string_part name;
-	string_part param1;
-	string_part param2;
+	std::vector<string_part> params;
 };
 
 std::vector<Command> commands;
@@ -17,9 +18,13 @@ std::vector<Command> commands;
 // zero character and return the memory address.
 char * read_file_as_string(const char * file_path);
 
+void error(const char * message) {
+    fprintf(stderr, "ERROR: %s", message);
+    exit(1);
+}
 
 bool iswhitespace(char c) {
-    return c == ' ' || c == '\t' || c == '\n' || c == '\r';
+    return c == ' ' || c == '\t' || c == '\r';
 }
 
 bool isalpha(char c) {
@@ -42,7 +47,7 @@ const char * to_string(const char * source, string_part part) {
     return buffer;
 }
 
-char * source = nullptr;
+const char * source = nullptr;
 int pi = 0;
 
 char peek() {
@@ -57,8 +62,27 @@ char read_char() {
     return c;
 }
 
+bool is_end_of_line() {
+    while(iswhitespace(peek())) pi++;
+    return peek() == '\n' || peek() == 0;
+}
+
 void next_line() {
-    while(iswhitespace(peek())) {
+    bool eol = is_end_of_line();
+    if(!eol) error("expected end of line");
+    
+    if(peek() == 0) return; //don't shoot over the end of the string
+    pi++;
+    if(peek() == 0) return; //don't shoot over the end of the string
+
+    // skip empty lines
+    while(is_end_of_line()) pi++;
+}
+
+void skip_ws_till_line_end() {
+    for(;;) {
+        char c = peek();
+        if(c != ' ' && c != '\t' && c != '\r' && c != 0) break;
         pi++;
     }
 }
@@ -75,10 +99,17 @@ enum class States {
 States current_state = States::ReadLine;
 
 string_part read_statement() {
+    if(is_end_of_line()) {
+        return string_part_empty;
+    }
+
     int begin = pi;
     int length = 0;
 
-    while(!iswhitespace(read_char())) {
+    for(;;) {
+        if(peek() == '\n' || peek() == 0) break;
+        char c = read_char();
+        if(iswhitespace(c)) break;
         length++;
     }
 
@@ -86,11 +117,19 @@ string_part read_statement() {
 }
 
 string_part read_parameter() {
+    if(is_end_of_line()) {
+        return string_part_empty;
+    }
+
     if(peek() != '\"') {
         return read_statement();
     }
 
+    skip_ws_till_line_end();
+
     int begin = pi;
+
+
     int length = 1;
 
     read_char();
@@ -127,11 +166,15 @@ void parse_source() {
             } break;
             case States::ReadCommand: {
                 string_part command_name = read_statement();
-                string_part param1 = read_parameter();
-                string_part param2 = read_parameter();
+                std::vector<string_part> params;
+                for(;;) {
+                    string_part param = read_parameter();
+                    if(param.length) params.push_back(param);
+                    else             break;
+                }
                 next_line();
 
-                Command command = { command_name, param1, param2 };
+                Command command = { command_name, std::move(params) };
                 commands.push_back(command);
 
                 current_state = States::ReadLine;
@@ -197,10 +240,11 @@ int main(int argn, char ** argv) {
         "show lisa happy\n"
 		"\n"
 		"scene bg desert\n";
-
+    
     // HA 3: mehr whitespace zeichen statements
     const char * source3 = 
         "show    lisa    happy   \n";
+
 
     // HA 4: mehr oder weniger parameter
     const char * source4 = 
@@ -212,15 +256,15 @@ int main(int argn, char ** argv) {
 
     parse_source();
 
-    /*
     for(Command command : commands) {
         string_part command_name = command.name;
-        string_part param1 = command.param1;
-        string_part param2 = command.param2;
-        std::printf("Command begin %d, length %d, pi %d, string %s \n", command_name.begin, command_name.length, pi, to_string(source, command_name));
-        std::printf("Param1 begin %d, length %d, pi %d, string %s \n", param1.begin, param1.length, pi, to_string(source, param1));
-        std::printf("Param2 begin %d, length %d, pi %d, string %s \n", param2.begin, param2.length, pi, to_string(source, param2));
+        std::printf("Command begin %d, length %d, string %s \n", command_name.begin, command_name.length, to_string(source, command_name));
+        for(int i = 0; i !=  command.params.size(); ++i) {
+            string_part param = command.params[i];
+            std::printf("Param%d begin %d, length %d, string %s \n", i, param.begin, param.length, to_string(source, param));
+        }
     }
+    /*
     */
 
     transpile_commands();
