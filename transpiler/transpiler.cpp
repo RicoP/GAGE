@@ -27,13 +27,32 @@ bool iswhitespace(char c) {
     return c == ' ' || c == '\t' || c == '\r';
 }
 
-bool isalpha(char c) {
+bool islower(char c) {
     if(c >= 'a' && c <= 'z') return true;
+    return false;
+}
+
+bool isupper(char c) {
     if(c >= 'A' && c <= 'Z') return true;
     return false;
 }
 
-const char * to_string(const char * source, string_part part) {
+bool isalpha(char c) {
+    if(islower(c)) return true;
+    if(isupper(c)) return true;
+    return false;
+}
+
+void to_upper(char * str) {
+    while(*str) {
+        if(islower(*str)) {
+            *str = 'A' + (*str - 'a');
+        }
+        ++str;
+    }
+}
+
+char * to_string(const char * source, string_part part) {
     static char buffer[1024] = "";
 
     char * p = buffer;
@@ -190,32 +209,40 @@ void parse_source() {
     }
 }
 
+void dump(const char * str) {
+    fputs(str, stdout);
+}
+
 // HA 0: implementieren
 //       Funktion sollte auf stddio den folgenden code generieren.
-void transpile_commands() {
-    // ... implement me
-    #if 0
-    // Example output
-    #include "gage.h"
-    #include "chapter1.h"
-    void Chapter1() {
-        static int    sm_line = -1;
-        static bool   sm_did_choice = false;
-        static double sm_wait_time = 0;
+void transpile_commands(const std::vector<Command> & commands) {
+    dump("#include \"gage.h\"                             \n");
+    dump("#include \"chapter1.h\"                         \n");
+    dump("void Chapter1() {                               \n");
+    dump("    static int    sm_line = -1;                 \n");
+    dump("    static bool   sm_did_choice = false;        \n");
+    dump("    static double sm_wait_time = 0;             \n");
+    dump("    switch(sm_line)                             \n");
+    dump("    {                                           \n");
+    dump("        default:                                \n");
+    dump("        case -1:                                \n");
 
-        switch(sm_line)
-        {
-            default:
-            case -1:
-
-            SHOW("lisa", "happy");
-            SAY("lisa", "Hello \"World");
-            SCENE("bg desert");
-
-            RETURN();
+    for(const Command & command : commands) {
+        char * command_name = to_string(source, command.name);
+        to_upper(command_name);
+        dump("        ");
+        dump(command_name);
+        dump("(");
+        for(int i = 0; i != command.params.size(); ++i) {
+            if(i != 0) dump(", ");
+            dump(to_string(source, command.params[i]));
         }
+        dump(");\n");
     }
-    #endif    
+
+    dump("        RETURN();                               \n");
+    dump("    }                                           \n");
+    dump("}                                               \n");
 }
 
 int main(int argn, char ** argv) {
@@ -267,7 +294,7 @@ int main(int argn, char ** argv) {
     /*
     */
 
-    transpile_commands();
+    transpile_commands(commands);
 
     return 0;
 }
