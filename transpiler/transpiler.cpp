@@ -22,25 +22,21 @@ struct Branch {
     Block block;
 };
 
-struct Condition {
-    std::vector<struct Branch> branches;
-};
-
 struct Statement {
 enum class Type {
     none = 0,
     command,
-    condition
+    branch
 };
 
 private:
     Command activecommand;
-    Condition activecondition;
+    Branch activebranch;
     Type activetype = Type::none;
 
 public:
     Statement(Command && _command) : activecommand(_command), activetype(Type::command) {}
-    Statement(Condition && _condition) : activecondition(_condition), activetype(Type::condition) {}
+    Statement(Branch && _branch)   : activebranch(_branch), activetype(Type::branch) {}
 
     Type type() const { return activetype; }
 
@@ -49,9 +45,9 @@ public:
         return activecommand;
     }
 
-    const Condition & condition() const {
-        assert(type() == Type::condition);
-        return activecondition;
+    const Branch & branch() const {
+        assert(type() == Type::branch);
+        return activebranch;
     }
 };
 
@@ -113,6 +109,7 @@ char * to_string(const char * source, string_part part) {
 
 const char * source = nullptr;
 int pi = 0;
+int indentation = 0;
 
 char peek() {
 	return source[pi];
@@ -131,23 +128,27 @@ bool is_end_of_line() {
     return peek() == '\n' || peek() == 0;
 }
 
-void next_line() {
-    bool eol = is_end_of_line();
-    if(!eol) error("expected end of line");
-    
-    if(peek() == 0) return; //don't shoot over the end of the string
-    pi++;
-    if(peek() == 0) return; //don't shoot over the end of the string
-
-    // skip empty lines
-    while(is_end_of_line()) pi++;
-}
-
 void skip_ws_till_line_end() {
     for(;;) {
         char c = peek();
-        if(c != ' ' && c != '\t' && c != '\r' && c != 0) break;
+        if(c != ' ' && c != '\t' && c != '\r') break;
+        if(c == 0) break;
         pi++;
+    }
+}
+
+void next_line() {
+    skip_ws_till_line_end();
+    int newlines = 0;
+    while(peek() == '\n') {
+        pi++;
+        newlines++;
+    }
+
+    if(newlines == 0) {
+        if(peek() != 0) {
+            error("expected end of line");
+        }
     }
 }
 
@@ -211,6 +212,26 @@ string_part read_parameter() {
     return string_part { begin, length };
 }
 
+string_part read_statement_string(Statement::Type & type) {
+    string_part sp = read_parameter();
+    if(sp.length == 0) type = Statement::Type::none;
+    
+    const char * s = to_string(source, sp);
+    if(s[0] == '\"') {
+        type = Statement::Type::branch;
+        //expect to be followed by a ':'
+        skip_ws_till_line_end();
+        char c = read_char();
+        if(c != ':') {
+            error("Expected ':' after condition.");
+        }
+    }
+    else {
+        type = Statement::Type::command;
+    }
+    return sp;
+}
+
 void parse_source(std::vector<struct Statement> & statements) {
     for(;;) {
         switch(current_state) {
@@ -221,25 +242,54 @@ void parse_source(std::vector<struct Statement> & statements) {
                     return;
                 }
 
-                if(isalpha(c)) {
-                    current_state = States::ReadCommand;
-                }
-                else {
-                    current_state = States::Error;
-                }
+                current_state = States::ReadCommand;
             } break;
             case States::ReadCommand: {
-                string_part command_name = read_statement();
-                std::vector<string_part> params;
-                for(;;) {
-                    string_part param = read_parameter();
-                    if(param.length) params.push_back(param);
-                    else             break;
+                //check indentation
+                for(int i = 0; i != indentation; ++i) {
+                    //one indentation equals four spaces
+                    for(int s = 0; s != 4; ++s) {
+                        if(peek() == ' ') {
+                            read_char();
+                            continue;
+                        }
+                        
+                        if(s == 0) {
+                            //no space found then we leave the current branch.
+                            return;
+                        }
+                        error("bad indentation");
+                    }
                 }
-                next_line();
 
-                Statement statement(Command { command_name, std::move(params) });
-                statements.push_back(std::move(statement));
+                Statement::Type stype = Statement::Type::none;
+                string_part statement_beginning = read_statement_string(stype);
+
+                if(stype == Statement::Type::command) {
+                    string_part command_name = statement_beginning;
+                    std::vector<string_part> params;
+                    for(;;) {
+                        string_part param = read_parameter();
+                        if(param.length) params.push_back(param);
+                        else             break;
+                    }
+                    next_line();
+
+                    Statement statement(Command { command_name, std::move(params) });
+                    statements.push_back(std::move(statement));
+                }
+                else if(stype == Statement::Type::branch) {
+                    next_line();
+                    indentation++;
+                    Branch branch;
+                    branch.head = statement_beginning;
+                    parse_source(branch.block.statements);
+                    indentation--;
+                    Statement statement(std::move(branch));
+                    statements.push_back(std::move(statement));
+                } else {
+                    error("Unexpected state");
+                }
 
                 current_state = States::ReadLine;
             } break;
@@ -258,14 +308,17 @@ void dump(const char * str) {
     fputs(str, stdout);
 }
 
+void transpile_block(int indent, const Block & block) {
+    for(int si = 0; si != block.statements.size(); ++si) {
+        const Statement & statement = block.statements[si];
+        //for(const Statement & statement : block.statements) {
+        dump("        ");
+        for(int i = 0; i < indent; ++i) dump("  ");
 
-void transpile_block(const Block & block) {
-    for(const Statement & statement : block.statements) {
         if(statement.type() == Statement::Type::command) {
             const Command & command = statement.command();
             char * command_name = to_string(source, command.name);
             to_upper(command_name);
-            dump("        ");
             dump(command_name);
             dump("(");
             for(int i = 0; i != command.params.size(); ++i) {
@@ -274,8 +327,42 @@ void transpile_block(const Block & block) {
             }
             dump(");\n");
         }
-        else if(statement.type() == Statement::Type::condition) {
-            dump("TODO!!!\n");
+        else if(statement.type() == Statement::Type::branch) {
+            bool isfirst = si == 0;
+            if(!isfirst) isfirst = block.statements[si-1].type() != Statement::Type::branch;
+            if(isfirst) {
+                dump("        CHOICE_BEGIN(); \n");
+            }
+
+            if(!isfirst) {
+                dump(" else ");
+            }
+
+
+            /*
+            if(CHOICE("Not so good honestly."))
+            {
+            //    show eileen concerned
+            SHOW("eileen", "concerned");
+            //    say eileen "I am sorry to hear that."
+            SAY("eileen", "I am sorry to hear that.");
+            }            
+            */
+            
+            dump("if(CHOICE(");
+            dump(to_string(source, statement.branch().head));
+            dump(")) {\n");
+
+            transpile_block(indent+1, statement.branch().block);
+
+            dump("        }\n");
+
+            bool islast = si == block.statements.size() - 1;
+            if(!islast) islast = block.statements[si+1].type() != Statement::Type::branch;
+            if(islast) {
+                dump("        CHOICE_END(); \n");
+            }
+
         }
     }
 }
@@ -292,7 +379,7 @@ void transpile_program(const Program & program) {
     dump("        default:                                \n");
     dump("        case -1:                                \n");
 
-    transpile_block(program.block);
+    transpile_block(0, program.block);
     
     dump("        RETURN();                               \n");
     dump("    }                                           \n");
@@ -346,6 +433,14 @@ int main(int argn, char ** argv) {
 		"say lisa \"Anyway\"\n"
         "return\n";
 
+    /*
+    source = source1;
+    source = source2;
+    source = source3;
+    source = source4;
+    source = source5;
+    */
+
     puts(source);
 
     Program program;
@@ -362,7 +457,7 @@ int main(int argn, char ** argv) {
                 std::printf("Param%d begin %d, length %d, string %s \n", i, param.begin, param.length, to_string(source, param));
             }
         }
-        else if(statement.type() == Statement::Type::condition) {
+        else if(statement.type() == Statement::Type::branch) {
             puts("TODO!");
         }
     }
