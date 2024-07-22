@@ -26,15 +26,16 @@ CL /MD /std:c++17 /DGRAPHICS_API_OPENGL_33 /DPLATFORM_DESKTOP ^
    /DSUPPORT_FILEFORMAT_JPG ^
    /DSUPPORT_FILEFORMAT_MP3 ^
    /DGAGE_BUILD_DLL ^
+   /DGAGE_BUILD_DLL_ENGINE ^
    /Iraylib/src ^
    /Iraylib/src/external ^
    /Iraylib/src/external/glfw/include ^
    /Iraylib/src/external/glfw/deps ^
    /Iimgui ^
    /Irlimgui ^
-   chapter1.cpp ^
    engine.cpp ^
    gage.cpp ^
+   dynamicload.cpp ^
    raylib/src/*.c ^
    imgui/*.cpp ^
    rlimgui/*.cpp ^
@@ -44,12 +45,20 @@ CL /MD /std:c++17 /DGRAPHICS_API_OPENGL_33 /DPLATFORM_DESKTOP ^
 
 CL /MD /std:c++17 ^
    /DGAGE_BUILD_DLL ^
+   /DGAGE_BUILD_DLL_GAME ^
+   chapter1.cpp ^
+   /link engine.lib ^
+   /DLL ^
+   /OUT:chapter.dll
+
+CL /MD /std:c++17 ^
+   /DGAGE_BUILD_DLL ^
    entry.cpp ^
    /link engine.lib ^
    /OUT:game.exe
 
 game.exe
 
-DEL *.exp *.lib *.obj *.o *.ilk *.pdb
+DEL *.exp *.obj *.o *.ilk *.pdb
 
 popd

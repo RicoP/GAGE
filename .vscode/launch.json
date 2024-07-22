@@ -1,3 +1,4 @@
+/*
 {
     "version": "0.2.0",
     "configurations": [
@@ -6,9 +7,9 @@
             "type": "cppvsdbg",
             "request": "launch",
             "program": "${workspaceFolder}/transpiler/transpiler.exe",
-            "args": [],
+            "args": [ "./myscript.txt", "myscript.cpp" ],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}",
+            "cwd": "${workspaceFolder}/transpiler",
             "environment": [],
             "console":"integratedTerminal",
             "preLaunchTask": "C/C++: cl.exe build active file",
@@ -16,3 +17,4 @@
         }
     ]
 }
+    */

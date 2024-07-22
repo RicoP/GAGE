@@ -1,14 +1,15 @@
 #include "raylib.h"
 #include "imgui.h"
 #include "rlimgui.h"
-#include "chapter1.h"
 #include "engine.h"
 #include <cstring>
 
 #ifdef GAGE_BUILD_DLL
-#define GAGE_API __declspec(dllexport)
+#define GAGE_ENTRY_API __declspec(dllexport)
+static Game_fp g_game = nullptr;
 #else
-#define GAGE_API
+#include "chapter1.h"
+#define GAGE_ENTRY_API
 #endif
 
 GageContext * s_GageContext = nullptr;
@@ -17,7 +18,7 @@ GageContext context;
 //------------------------------------------------------------------------------------
 // Program main entry point
 //------------------------------------------------------------------------------------
-GAGE_API int gage_main()
+GAGE_ENTRY_API int gage_main()
 {
     // Initialization
     //--------------------------------------------------------------------------------------
@@ -36,6 +37,8 @@ GAGE_API int gage_main()
     //--------------------------------------------------------------------------------------
 
     rlImGuiSetup(true); 	// sets up ImGui with ether a dark or light default theme
+
+    InitLoadGameLib();
 
     // Main game loop
     while (!WindowShouldClose())                // Detect window close button or ESC key
@@ -61,6 +64,20 @@ GAGE_API int gage_main()
 
             // inside your game loop, between BeginDrawing() and EndDrawing()
             rlImGuiBegin();			// starts the ImGui content mode. Make all ImGui calls after this
+
+            #ifdef GAGE_BUILD_DLL
+            {
+                if(ImGui::Button("Load DLL")) {
+                    g_game = LoadGameLib("chapter.dll");
+                    if(g_game == nullptr) {
+                        TraceLog(LOG_FATAL, "Error Could't load DLL");
+                        exit(1);
+                    }
+                    context = GageContext();
+                    s_GageContext = &context;
+                }
+            }
+            #endif
 
             ImGui::ShowDemoWindow();
 
@@ -97,7 +114,13 @@ GAGE_API int gage_main()
                 if(s_GageContext->choiceactive) s_GageContext->forcetick = true;
 
                 if(s_GageContext->forcetick || ImGui::Button("Next Step in Script")) {
+                    #ifdef GAGE_BUILD_DLL
+                    if(g_game != nullptr) {
+                        g_game();
+                    }
+                    #else
                     Chapter1();
+                    #endif
                     s_GageContext->forcetick = false;
                 }
             }

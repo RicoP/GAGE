@@ -1,15 +1,25 @@
 #pragma once
 
-#include "raylib.h"
+#ifdef GAGE_BUILD_DLL
+#   if defined(GAGE_BUILD_DLL_ENGINE)
+#       define GAGE_API __declspec(dllexport)
+#   elif defined(GAGE_BUILD_DLL_GAME)
+#       define GAGE_API __declspec(dllimport)
+#   else
+#       error "UNKNOWN DLL type"
+#   endif
+#else
+#define GAGE_API
+#endif
 
-void scene(const char * name);
-void show(const char * name, const char * mood);
-void say(const char * name, const char * text);
-void choice_begin();
-bool choice(const char * text);
-void choice_end();
-void music(const char * title);
-void wait(double seconds);
+GAGE_API void scene(const char * name);
+GAGE_API void show(const char * name, const char * mood);
+GAGE_API void say(const char * name, const char * text);
+GAGE_API void choice_begin();
+GAGE_API bool choice(const char * text);
+GAGE_API void choice_end();
+GAGE_API void music(const char * title);
+GAGE_API void wait(double seconds);
 
 // Handmade coroutines
 // https://de.wikipedia.org/wiki/Duff%E2%80%99s_Device

@@ -41,3 +41,7 @@ struct GageContext {
 };
 
 extern GageContext * s_GageContext;
+
+typedef void (*Game_fp)();
+void InitLoadGameLib();
+Game_fp LoadGameLib(const char *);

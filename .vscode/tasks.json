@@ -5,7 +5,6 @@
             "label": "C/C++: cl.exe build active file",
             "command": "cl.exe",
             "args": [
-                /*
                 "/Zi",
                 "/EHsc",
                 "/nologo",
@@ -26,10 +25,12 @@
                 "rlimgui/*.cpp",   
                 "chapter1.cpp",             
                 "gage.cpp",             
-                "engine.cpp",             
-                "/Fe${fileDirname}\\${fileBasenameNoExtension}.exe",
+                "engine.cpp",
+                "entry.cpp",
+                "dynamicload.cpp",
+                "/Fe${fileDirname}\\game.exe",
                 "/link user32.lib shell32.lib winmm.lib gdi32.lib"
-                */
+                /*
                 "/Zi",
                 "/EHsc",
                 "/nologo",
@@ -37,6 +38,7 @@
                 "/std:c++17",
                 "transpiler.cpp",
                 "/Fe${fileDirname}\\${fileBasenameNoExtension}.exe",
+                */
             ],
             "options": {
                 "cwd": "${fileDirname}"

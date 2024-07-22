@@ -1,10 +1,10 @@
 #ifdef GAGE_BUILD_DLL
-#define GAGE_API __declspec(dllimport)
+#define GAGE_ENTRY_API __declspec(dllimport)
 #else
-#define GAGE_API
+#define GAGE_ENTRY_API
 #endif
 
-GAGE_API int gage_main();
+GAGE_ENTRY_API int gage_main();
 
 int main() {
     return gage_main();
