@@ -25,6 +25,7 @@ DEL game.exe
 CL /MD /std:c++17 /DGRAPHICS_API_OPENGL_33 /DPLATFORM_DESKTOP ^
    /DSUPPORT_FILEFORMAT_JPG ^
    /DSUPPORT_FILEFORMAT_MP3 ^
+   /DGAGE_BUILD_DLL ^
    /Iraylib/src ^
    /Iraylib/src/external ^
    /Iraylib/src/external/glfw/include ^
@@ -34,15 +35,21 @@ CL /MD /std:c++17 /DGRAPHICS_API_OPENGL_33 /DPLATFORM_DESKTOP ^
    chapter1.cpp ^
    engine.cpp ^
    gage.cpp ^
-   entry.cpp ^
    raylib/src/*.c ^
    imgui/*.cpp ^
    rlimgui/*.cpp ^
    /link user32.lib shell32.lib winmm.lib gdi32.lib ^
+   /DLL ^
+   /OUT:engine.dll
+
+CL /MD /std:c++17 ^
+   /DGAGE_BUILD_DLL ^
+   entry.cpp ^
+   /link engine.lib ^
    /OUT:game.exe
 
 game.exe
 
-DEL *.exp *.lib *.obj *.o *.ilk *.pdb *.exe
+DEL *.exp *.lib *.obj *.o *.ilk *.pdb
 
 popd

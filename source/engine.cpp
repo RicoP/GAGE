@@ -5,13 +5,19 @@
 #include "engine.h"
 #include <cstring>
 
+#ifdef GAGE_BUILD_DLL
+#define GAGE_API __declspec(dllexport)
+#else
+#define GAGE_API
+#endif
+
 GageContext * s_GageContext = nullptr;
 GageContext context;
 
 //------------------------------------------------------------------------------------
 // Program main entry point
 //------------------------------------------------------------------------------------
-int main(void)
+GAGE_API int gage_main()
 {
     // Initialization
     //--------------------------------------------------------------------------------------
