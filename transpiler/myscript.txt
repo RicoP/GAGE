@@ -1,0 +1,10 @@
+music "joy"
+wait 2.0
+show lisa happy
+say lisa "How are you"
+"good":
+    say lisa "Great!"
+"bad":
+    say lisa "Shame."
+say lisa "Anyway"
+return

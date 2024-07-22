@@ -381,32 +381,53 @@ void transpile_program(const Program & program) {
 //argv[1] = "meinscript.txt"
 //argv[2] = "chapter1.cpp"
 
+char * read_file_as_string(const char * file_path) {
+    FILE * f = fopen(file_path, "r");
+
+    int filesize = fseek(f, 0, SEEK_END);
+
+    char * buffer = new char[filesize + 1];
+
+    fread(buffer, filesize, 1, f);
+
+    buffer[filesize] = 0;
+
+    fclose(f);
+
+    return buffer;
+}
+
 int main(int argn, char ** argv) {
-	/*
-	if(argn != 2) return -1;
+    /*
+	if(argn != 3) return -1;
 	source = read_file_as_string(argv[1]);
-	*/
+
+    puts(source);
+
+    delete source;
+    return 0;
+    */
 
 	source =
-		"show lisa happy\n"
-		"say lisa \"Hello \\\"World\"\n"
+		"show eileen happy\n"
+		"say eileen \"Hello \\\"World\"\n"
 		"scene bg desert\n";
 	pi = 0;
 
     // HA 1: folgende source
     const char * source1 = 
-		/*kein return am schluss */ "show lisa happy";
+		/*kein return am schluss */ "show eileen happy";
 
     // HA 2: folgende source
     const char * source2 = 
 		/* Leerzeilen */
-        "show lisa happy\n"
+        "show eileen happy\n"
 		"\n"
 		"scene bg desert\n";
     
     // HA 3: mehr whitespace zeichen statements
     const char * source3 = 
-        "show    lisa    happy   \n";
+        "show    eileen    happy   \n";
 
 
     // HA 4: mehr oder weniger parameter
@@ -419,13 +440,13 @@ int main(int argn, char ** argv) {
     const char * source5 = 
         "music \"joy\"\n"
         "wait 2.0\n"
-        "show lisa happy\n"
-		"say lisa \"How are you\"\n"
+        "show \"eileen\" \"happy\"\n"
+		"say \"eileen\" \"How are you\"\n"
         "\"good\":\n"
-		"    say lisa \"Great!\"\n"
+		"    say \"eileen\" \"Great!\"\n"
         "\"bad\":\n"
-		"    say lisa \"Shame.\"\n"
-		"say lisa \"Anyway\"\n"
+		"    say \"eileen\" \"Shame.\"\n"
+		"say \"eileen\" \"Anyway\"\n"
         "return\n";
 
     /*
@@ -436,12 +457,13 @@ int main(int argn, char ** argv) {
     */
     source = source5;
 
-    puts(source);
+    //puts(source);
 
     Program program;
 
     parse_source(program.block.statements);
 
+    /*
     for(Statement & statement : program.block.statements) {
         if(statement.type() == Statement::Type::command) {
             const Command & command = statement.command();
@@ -456,7 +478,6 @@ int main(int argn, char ** argv) {
             puts("TODO!");
         }
     }
-    /*
     */
 
     transpile_program(program);
