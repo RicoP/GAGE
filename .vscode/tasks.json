@@ -5,6 +5,7 @@
             "label": "C/C++: cl.exe build active file",
             "command": "cl.exe",
             "args": [
+                /*
                 "/Zi",
                 "/EHsc",
                 "/nologo",
@@ -28,6 +29,14 @@
                 "engine.cpp",             
                 "/Fe${fileDirname}\\${fileBasenameNoExtension}.exe",
                 "/link user32.lib shell32.lib winmm.lib gdi32.lib"
+                */
+                "/Zi",
+                "/EHsc",
+                "/nologo",
+                "/MD",
+                "/std:c++17",
+                "transpiler.cpp",
+                "/Fe${fileDirname}\\${fileBasenameNoExtension}.exe",
             ],
             "options": {
                 "cwd": "${fileDirname}"
