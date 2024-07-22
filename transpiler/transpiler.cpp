@@ -371,7 +371,11 @@ void transpile_program(const Program & program) {
     dump("}                                               \n");
 }
 
+//Aufgabe: ich rufe transpiler.exe so auf
 //transpiler.exe meinscript.txt chapter1.cpp
+//dann soll mein script in meinscript.txt transpiliert werden und der 
+//transpilierte C++ code soll in chapter1.cpp geschrieben werden.
+
 //argn = 3
 //argv[0] = "./mein/pfad/transpiler.exe"
 //argv[1] = "meinscript.txt"
